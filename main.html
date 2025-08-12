@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toe with AI</title>
+    <title>Tic Tac Toe</title>
     <link rel = "stylesheet" href = "style.css">
 </head>
 <body>
 
     <div class="container">
-        <h1>Tic Tac Toe with AI</h1>
+        <div id = "overlay"></div>
+        <h1>Tic Tac Toe PvP</h1>
         <div id="game-board">
             <div class="cell" data-index="0"></div>
             <div class="cell" data-index="1"></div>
@@ -22,13 +23,14 @@
             <div class="cell" data-index="8"></div>
         </div>  
         <div id="status">
-            <p id="current-player">Current Player: O</p>
+            <p id="current-player">Current Player:</p>
             <p id="game-status">Game Status: In Progress</p>
         </div>
         <div class="button-group">
             <button id="start-button" class="button">Start Game</button>  
             <button id="undo-button" class="button">Undo Move</button>
             <button id="reset-button" class="button">Reset Game</button>
+            <button id="game-mode" class="button">Change Gamemode</button>
         </div>
     </div>
 

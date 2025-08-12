@@ -9,6 +9,7 @@
 #game-board {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
     align-items: center ;
     text-align: center ;
     width: 30vw;
@@ -28,6 +29,8 @@ h1 {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    overflow: hidden;
+    font-size: 4vw;
 }
 #game-board div:hover {
     background-color: lightgray;
@@ -62,6 +65,9 @@ h1 {
     color: white;
     border-radius: 50% ;
     box-shadow: 10px 8px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .button:hover {
@@ -73,10 +79,18 @@ h1 {
 
 [user='O'] {
     color : red ;
-    font-size: 40px ;
 }
 
 [user='X'] {
     color : blue ;
-    font-size: 40px ;
+}
+
+#overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(172, 172, 172, 0.808);
+    z-index: 100;
+    display: none;
 }

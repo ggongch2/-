@@ -23,6 +23,7 @@ class TicTacToe {
 
     constructor() {
         this.board = Array(9).fill(null);
+        this.gamemode = 'PvP' ; 
         this.currentPlayer = 'O';
         this.gameActive = true;
         this.history = [];
@@ -30,9 +31,14 @@ class TicTacToe {
 
     startGame() {
         this.board.fill(null);
-        this.currentPlayer = 'X';
+        this.currentPlayer = 'O';
         this.gameActive = true;
         this.history = [];
+        this.gamemode = 'PvP' ; 
+
+        const currentGameStatus = document.querySelector('#game-status') ;
+        currentGameStatus.textContent = 'Game Status: In Progress' ; 
+
         this.updateUI();
         const cellElements = document.querySelectorAll('.cell');
         for (let i = 0; i < cellElements.length; i++) {
@@ -44,14 +50,42 @@ class TicTacToe {
 
     updateUI() {
         // UI 업데이트 로직 
-
         const cellElements = document.querySelectorAll('.cell');
         for (let i = 0; i < cellElements.length; i++) {
             const cell = cellElements[i];
             cell.textContent = this.board[i] === null ? '' : this.board[i];
         }   
+        const currentPlayer = document.querySelector('#current-player') ;
+        currentPlayer.textContent = 'Current Player: '+ this.currentPlayer ; 
+        this.checkGameEnd() ;
     }
 
+    checkGameEnd() {
+        // 게임 상태를 확인
+        const gameStatus = this.checkGame();
+        const currentGameStatus = document.querySelector('#game-status') ;
+        switch(gameStatus) {
+            case 'X' :
+                alert("X의 승리!") ;
+                this.gameActive = false ; 
+                currentGameStatus.textContent = 'Game Status: ' + 'X win!' ;
+                break ;
+            case 'O' :
+                alert("O의 승리!") ;
+                this.gameActive = false ; 
+                currentGameStatus.textContent = 'Game Status: '+  'O win!' ;
+                break ;
+            case 'draw' :
+                alert("무승부!") ;
+                this.gameActive = false ; 
+                currentGameStatus.textContent = 'Game Status: '+  'Drew!' ;
+                break ;
+            default :
+                currentGameStatus.textContent = 'Game Status: '+  'In Progress' ;
+                break ; 
+        }
+
+    }
     // 플레이어의 이동을 처리하는 메소드(ai도 이용) 
     // 매개변수는 cellIndex (0-8) 
     makeMove(cellIndex) {
@@ -68,42 +102,51 @@ class TicTacToe {
 
 
         // 현재 플레이어를 변경
-        this.currentPlayer = this.currentPlayer === 'O' ? 'O' : 'X';
+        this.currentPlayer = this.currentPlayer === 'O' ? 'X' : 'O';
 
         // 이동이 성공적이면 history에 추가 
         this.history.push(cellIndex);
         
-        // 게임 상태를 확인
-        const gameStatus = this.checkGame();
-        switch(gameStatus) {
-            case 'X' :
-                alert("X의 승리!") ;
-                this.gameActive = false ; 
-                break ;
-            case 'O' :
-                alert("O의 승리!") ;
-                this.gameActive = false ; 
-                break ;
-            case 'draw' :
-                alert("무승부!") ;
-                this.gameActive = false ; 
-                break ;
-            default :
-                break ; 
-        }
+    }
+
+
+    AImakeMove() {
+        // 칸을 순회하면서 가능한 move를 찾기 
+        let possibleMoves = [] ;
+        
+        // 가능한 move중 최선의 수 찾기
+
+
+
+        // 해당 move를 반환, 현재 플레이어 변경
+
+
+        //이동이 성공적이면 history에 추가
+
+
+
+
     }
     
     undoMove() {
         // 마지막 이동을 되돌리는 로직(자기 차례일때만 가능)
-        
-        if(this.history.length === 0) {
+        // PvP의 경우는 자신의 두번째수부터 가능 -> 앞선 두수를 지우면 됨
+        if(this.history.length < 2) {
             return; // 되돌릴 이동이 없으면 종료
         }
         
-        let historyLen = this.history.length ;        
-        this.board[historyLen-1] = null ;
-        this.board[historyLen-2] = null ; 
+        const lastMove_d1 = this.history.pop() ;
+        const lastMove_d2 = this.history.pop() ;
+        if(lastMove_d1 !== undefined) this.board[lastMove_d1] = null ;
+        if(lastMove_d2 !== undefined) this.board[lastMove_d2] = null ;  
+
+
         const gameStatus = this.checkGame();
+        this.gameActive = true ; 
+        
+
+
+
     } 
 
     checkGame() {
@@ -123,19 +166,23 @@ class TicTacToe {
             }
         }
         
-        Object.entries(victoryConditions).forEach(([key, value]) => {
-            let oCount = 0 ;
-            let xCount = 0 ;  
+        for(const key of Object.keys(victoryConditions)){
+            victoryConditions[key].forEach(condition =>{
+                let oCount = 0 ;
+                let xCount = 0 ;
+                for(const elmt of condition){
+                    if(oArray.includes(elmt)) oCount++ ;
+                    if(xArray.includes(elmt)) xCount++ ; 
+                }
+                if(oCount == 3){
+                    gameResult = 'O' ; 
+                }
+                if(xCount == 3){
+                    gameResult = 'X' ; 
+                }
+            });
+        }
 
-            //elmt 부분 수정해야할듯 
-            value.forEach(elmt => {
-                if(oArray.includes(elmt)) oCount++ ;
-                if(xArray.includes(elmt)) xCount++ ; 
-            }) ;
-            if(oCount == 3 || xCount == 3) {
-                gameResult = oCount === 3 ? 'O' : 'X' ;  
-            }
-        }) ;
         //this.board가 모두 차있고 승리조건으로 결정X이면 draw 
         if(this.history.length === 9 && gameResult === null) gameResult = 'draw' ; 
         return gameResult ;  
@@ -155,6 +202,7 @@ const game = new TicTacToe();
 const startButton = document.getElementById('start-button');
 const undoMoveButton = document.getElementById('undo-button');
 const resetButton = document.getElementById('reset-button');
+const gamemodeButton = document.getElementById('game-mode') ; 
 
 startButton.addEventListener('click', () => {
     game.startGame();
@@ -172,19 +220,34 @@ resetButton.addEventListener('click', () => {
     game.updateUI();
 }); 
 
+gamemodeButton.addEventListener('click', () =>{
+    if(game.gamemode == 'PvP'){
+        const gamemodeText = document.querySelector('.container h1') ; 
+        gamemodeText.textContent = 'Tic Tac Toe AI' ;
+        game.gamemode = 'AI' ; 
+
+    }
+    else if(game.gamemode == 'AI'){
+        const gamemodeText = document.querySelector('.container h1') ; 
+        gamemodeText.textContent = 'Tic Tac Toe PvP' ;
+        game.gamemode = 'PvP' ; 
+    }
+})
+
 const cellElements = document.querySelectorAll('.cell');   
 for (let i = 0; i < cellElements.length; i++) {
     cellElements[i].addEventListener('click', () => {
         const cellIndex = i; 
         game.makeMove(cellIndex);
         game.updateUI();
+        if(game.gamemode === "AI"){
+            // 이 기간 동안은 보드 잠그기ㅣ, makeMove 상호작용 불가 및 각종 버튼 작동불가 <- 걍 전체 화면을 터치불가?로 하는것도 ㄱㅊ을듯 
+            const overlay = document.querySelector('#overlay') ;
+            overlay.setAttribute('display',"") ;
+            game.AImakeMove() ;
+            game.updateUI() ;  
+            overlay.setAttribute('display',"none") ;
+        }
     });
 }
 
-
-// 해야할 것 : UI 업데이트 로직 구현 -> 
-// 자신의 차리가 아닐시에는 화면 잠금 ?/makeMove함수 작동 x 
-//  
-
-// O 먼저 시작 
-// 로직 : move다음에는 무조건 updateUI 호출
